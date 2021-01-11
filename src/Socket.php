@@ -24,24 +24,24 @@ class Socket implements MessageComponentInterface
     public function onMessage(ConnectionInterface $from, $msg)
     {
         foreach ($this->clients as $client) {
-            if ($from->resourceId == $client->resourceId) {
-                continue;
+            if ($from->resourceId != $client->resourceId) {
+                $client->send(
+                    json_encode([
+                        'from' => $from->resourceId,
+                        'messages' => $msg,
+                    ])
+                );
             }
-
-            $client->send(
-                json_encode([
-                    'from' => $from->resourceId,
-                    'messages' => $msg,
-                ])
-            );
         }
     }
 
     public function onClose(ConnectionInterface $conn)
     {
+        $this->clients->detach($conn);
     }
 
     public function onError(ConnectionInterface $conn, Exception $e)
     {
+        $conn->close();
     }
 }

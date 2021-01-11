@@ -1,24 +1,18 @@
 <?php
 
 use Gingdev\Socket;
-use Ratchet\Http\HttpServer;
-use Ratchet\Http\OriginCheck;
-use Ratchet\Server\IoServer;
-use Ratchet\WebSocket\WsServer;
+use Gingdev\Wamp;
+use Ratchet\App;
+use Ratchet\Server\EchoServer;
 
 require 'vendor/autoload.php';
 
-$wsServer = new WsServer(new Socket());
+$allow = ['localhost', getenv('DOMAIN')];
 
-$checkedApp = new OriginCheck($ws, ['localhost']);
+$server = new App('localhost', 3000);
 
-$checkedApp->allowedOrigins[] = getenv('DOMAIN');
-
-$server = IoServer::factory(
-    new HttpServer($checkedApp),
-    getenv('PORT')
-);
-
-$wsServer->enableKeepAlive($server->loop, 30);
+$server->route('/wamp', new Wamp(), $allow);
+$server->route('/echo', new EchoServer(), $allow);
+$server->route('/socket', new Socket(), $allow);
 
 $server->run();
