@@ -1,0 +1,8 @@
+{
+  "name": "Ratchet for Heroku",
+  "description": "Ratchet Socket Server for Heroku.",
+  "repository": "https://github.com/ging-dev/ratchet-heroku",
+  "logo": "http://socketo.me/assets/img/logo.png",
+  "keywords": ["socket", "ratchet", "php"],
+  "image": "heroku/php"
+}
