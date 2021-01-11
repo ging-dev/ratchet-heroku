@@ -8,18 +8,17 @@ use Ratchet\WebSocket\WsServer;
 
 require 'vendor/autoload.php';
 
-$app = new OriginCheck(
-    new WsServer(
-        new Socket()
-    ),
-    ['localhost']
-);
+$wsServer = new WsServer(new Socket());
 
-$app->allowedOrigins[] = getenv('DOMAIN');
+$checkedApp = new OriginCheck($ws, ['localhost']);
+
+$checkedApp->allowedOrigins[] = getenv('DOMAIN');
 
 $server = IoServer::factory(
-    new HttpServer($app),
+    new HttpServer($checkedApp),
     getenv('PORT')
 );
+
+$wsServer->enableKeepAlive($server->loop, 30);
 
 $server->run();
